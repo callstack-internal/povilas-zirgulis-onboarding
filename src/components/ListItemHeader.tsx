@@ -5,7 +5,7 @@ import TemperaturePill from '@components/TemperaturePill';
 import {Weather} from '@utils/services.types';
 
 type ListItemHeaderProps = {
-  item: Weather;
+  item: Weather | undefined;
   hasArrow?: boolean;
 };
 

@@ -5,10 +5,40 @@ import {weatherQueries} from '../services/weather';
 import {useQuery} from '@tanstack/react-query';
 import WeatherListItem from '../components/WeatherListItem';
 import Layout from '@components/Layout';
+import LoadingIndicator from '@components/LoadingIndicator';
+import ErrorDisplay from '@components/ErrorDisplay';
+import EmptyResultsDisplay from '@components/EmptyResultsDisplay';
 
 const WeatherListScreen = () => {
   const weatherListQuery = useQuery(weatherQueries.weatherList());
   const weatherList = weatherListQuery.data;
+
+  if (weatherListQuery.isLoading) {
+    return (
+      <Layout>
+        <LoadingIndicator />
+      </Layout>
+    );
+  }
+
+  if (weatherListQuery.error) {
+    return (
+      <Layout>
+        <ErrorDisplay
+          text="An error occurred while fetching list data"
+          onRetry={weatherListQuery.refetch}
+        />
+      </Layout>
+    );
+  }
+
+  if (!weatherListQuery.isLoading && !weatherList?.length) {
+    return (
+      <Layout>
+        <EmptyResultsDisplay />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

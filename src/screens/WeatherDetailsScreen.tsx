@@ -7,6 +7,9 @@ import {RootStackParamList} from '../utils/navigation.types';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {weatherQueries} from '@services/weather';
 import Layout from '@components/Layout';
+import LoadingIndicator from '@components/LoadingIndicator';
+import ErrorDisplay from '@components/ErrorDisplay';
+import EmptyResultsDisplay from '@components/EmptyResultsDisplay';
 
 type WeatherDetailsScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -19,6 +22,33 @@ const WeatherDetailsScreen = () => {
 
   const cityWeatherQuery = useQuery(weatherQueries.cityWeather(cityId));
   const cityData = cityWeatherQuery.data;
+
+  if (cityWeatherQuery.isLoading) {
+    return (
+      <Layout>
+        <LoadingIndicator />
+      </Layout>
+    );
+  }
+
+  if (cityWeatherQuery.error) {
+    return (
+      <Layout>
+        <ErrorDisplay
+          text="An error occurred while fetching city data"
+          onRetry={cityWeatherQuery.refetch}
+        />
+      </Layout>
+    );
+  }
+
+  if (!cityWeatherQuery.isLoading && !cityData) {
+    return (
+      <Layout>
+        <EmptyResultsDisplay />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>

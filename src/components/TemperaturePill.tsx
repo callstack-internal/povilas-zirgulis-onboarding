@@ -2,13 +2,17 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
 type TemperaturePillProps = {
-  temperature: number;
+  temperature: number | undefined;
 };
 
 const TemperaturePill = ({temperature}: TemperaturePillProps) => {
+  if (!temperature) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{`${temperature} C`}</Text>
+      <Text style={styles.text}>{`${temperature} °C`}</Text>
     </View>
   );
 };
