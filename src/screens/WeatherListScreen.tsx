@@ -1,8 +1,9 @@
 import React from 'react';
-import {SafeAreaView, ScrollView, Text} from 'react-native';
+import {SafeAreaView, ScrollView} from 'react-native';
 
-import {weatherQueries} from '@services/weather';
+import {weatherQueries} from '../services/weather';
 import {useQuery} from '@tanstack/react-query';
+import WeatherListItem from '../components/WeatherListItem';
 
 const WeatherListScreen = () => {
   const weatherListQuery = useQuery(weatherQueries.weatherList());
@@ -20,7 +21,7 @@ const WeatherListScreen = () => {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         {weatherList?.map(item => (
-          <Text key={item.id}>{item.id} </Text>
+          <WeatherListItem key={item.id} item={item} />
         ))}
       </ScrollView>
     </SafeAreaView>
