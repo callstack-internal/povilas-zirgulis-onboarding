@@ -1,7 +1,7 @@
 import React from 'react';
 import {SafeAreaView, ScrollView, Text} from 'react-native';
 
-import {weatherQueries} from '../services/weather';
+import {weatherQueries} from '@services/weather';
 import {useQuery} from '@tanstack/react-query';
 
 const WeatherListScreen = () => {

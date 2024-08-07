@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {queryOptions} from '@tanstack/react-query';
-import {Weather} from '../utils/services.types';
+import {Weather} from '@utils/services.types';
 
 const citiesIds = [
   703448, // Kyiv, UA
