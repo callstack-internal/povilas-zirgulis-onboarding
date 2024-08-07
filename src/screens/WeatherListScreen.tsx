@@ -1,30 +1,23 @@
 import React from 'react';
-import {SafeAreaView, ScrollView} from 'react-native';
+import {ScrollView} from 'react-native';
 
 import {weatherQueries} from '../services/weather';
 import {useQuery} from '@tanstack/react-query';
 import WeatherListItem from '../components/WeatherListItem';
+import Layout from '@components/Layout';
 
 const WeatherListScreen = () => {
   const weatherListQuery = useQuery(weatherQueries.weatherList());
-
-  const backgroundStyle = {
-    flex: 1,
-    backgroundColor: '#fff',
-  };
-
   const weatherList = weatherListQuery.data;
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
+    <Layout>
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
         {weatherList?.map(item => (
           <WeatherListItem key={item.id} item={item} />
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </Layout>
   );
 };
 
