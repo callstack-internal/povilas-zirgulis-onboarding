@@ -10,6 +10,7 @@ import Layout from '@components/Layout';
 import LoadingIndicator from '@components/LoadingIndicator';
 import ErrorDisplay from '@components/ErrorDisplay';
 import EmptyResultsDisplay from '@components/EmptyResultsDisplay';
+import {COLOR} from '@utils/colors';
 
 type WeatherDetailsScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#CCCCCC',
+    borderBottomColor: COLOR.grey,
     justifyContent: 'space-between',
     fontSize: 16,
   },
@@ -91,6 +92,6 @@ const styles = StyleSheet.create({
   },
   conditionText: {
     fontSize: 16,
-    color: '#908f8f',
+    color: COLOR.darkGrey,
   },
 });

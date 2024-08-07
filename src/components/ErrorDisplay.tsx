@@ -1,5 +1,6 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
+import {COLOR} from '@utils/colors';
 
 const ErrorDisplay = ({text, onRetry}: {text: string; onRetry: () => void}) => {
   return (
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
     gap: 36,
   },
   retryButton: {
-    backgroundColor: '#a4c5e3',
+    backgroundColor: COLOR.blue,
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,

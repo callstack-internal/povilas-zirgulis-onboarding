@@ -6,6 +6,7 @@ import WeatherListScreen from '@screens/WeatherListScreen';
 import {RootStackParamList} from '@utils/navigation.types';
 import WeatherDetailsScreen from '@screens/WeatherDetailsScreen';
 import {StyleSheet} from 'react-native';
+import {COLOR} from '@utils/colors';
 
 const Entry = () => {
   const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -36,7 +37,7 @@ const Entry = () => {
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#CCCCCC',
+    backgroundColor: COLOR.white,
   },
 });
 

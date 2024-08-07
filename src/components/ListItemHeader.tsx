@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, Image} from 'react-native';
 import ArrowRightIcon from '@assets/icons/arrow-right.svg';
 import TemperaturePill from '@components/TemperaturePill';
 import {Weather} from '@utils/services.types';
+import {COLOR} from '@utils/colors';
 
 type ListItemHeaderProps = {
   item: Weather | undefined;
@@ -39,9 +40,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLOR.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#CCCCCC',
+    borderBottomColor: COLOR.grey,
   },
   leftContent: {
     flexDirection: 'row',
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
   conditionText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#908f8f',
+    color: COLOR.darkGrey,
   },
   rightContent: {
     flexDirection: 'row',

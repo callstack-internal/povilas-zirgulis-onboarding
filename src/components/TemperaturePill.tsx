@@ -1,3 +1,4 @@
+import {COLOR} from '@utils/colors';
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
@@ -19,14 +20,14 @@ const TemperaturePill = ({temperature}: TemperaturePillProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#a4c5e3',
+    backgroundColor: COLOR.blue,
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 16,
     alignSelf: 'flex-start',
   },
   text: {
-    color: '#fff',
+    color: COLOR.white,
     fontSize: 16,
   },
 });
