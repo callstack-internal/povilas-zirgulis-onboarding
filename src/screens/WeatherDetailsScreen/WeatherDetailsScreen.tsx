@@ -1,9 +1,9 @@
 import React from 'react';
-import ListItemHeader from '../components/ListItemHeader';
+import ListItemHeader from '@components/ListItemHeader';
 import {StyleSheet, Text, View} from 'react-native';
 import {useQuery} from '@tanstack/react-query';
 import {useRoute} from '@react-navigation/native';
-import {RootStackParamList} from '../utils/navigation.types';
+import {RootStackParamList} from '@utils/navigation.types';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {weatherQueries} from '@services/weather';
 import Layout from '@components/Layout';
@@ -32,7 +32,7 @@ const WeatherDetailsScreen = () => {
     );
   }
 
-  if (cityWeatherQuery.error) {
+  if (cityWeatherQuery.isError) {
     return (
       <Layout>
         <ErrorDisplay
@@ -53,7 +53,7 @@ const WeatherDetailsScreen = () => {
 
   return (
     <Layout>
-      <ListItemHeader item={cityData} />
+      <ListItemHeader item={cityData} testID="city_name" />
 
       <View style={styles.textContainer}>
         <Text style={styles.conditionTitle}>Humidity</Text>

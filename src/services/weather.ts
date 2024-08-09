@@ -1,15 +1,18 @@
 import axios from 'axios';
 import {queryOptions} from '@tanstack/react-query';
-import {Weather} from '@utils/services.types';
+import {Weather, WeatherListResponse} from '@utils/services.types';
 import {CITIES_IDS} from '@utils/constants';
 
-const apiInstance = axios.create({
+export const apiInstance = axios.create({
   baseURL: 'https://api.openweathermap.org/data/2.5',
   params: {
     units: 'metric',
     appId: process.env.WEATHER_API_KEY,
   },
 });
+
+export const cityWeatherRoute = '/weather';
+export const weatherListRoute = '/group';
 
 export const weatherQueries = {
   weatherList: () =>
@@ -24,27 +27,37 @@ export const weatherQueries = {
     }),
 };
 
-type WeatherListResponse = {
-  list: Weather[];
-  cnt: number;
-};
-
 const fetchCityWeather = async (id: number) => {
-  const response = await apiInstance.get<Weather>('/weather', {
-    params: {
-      id,
-    },
-  });
+  try {
+    const response = await apiInstance.get<Weather>(cityWeatherRoute, {
+      params: {
+        id,
+      },
+    });
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      // Handle error
+    }
+  }
 };
 
 const fetchWeatherList = async () => {
-  const response = await apiInstance.get<WeatherListResponse>('/group', {
-    params: {
-      id: CITIES_IDS.join(','),
-    },
-  });
+  try {
+    const response = await apiInstance.get<WeatherListResponse>(
+      weatherListRoute,
+      {
+        params: {
+          id: CITIES_IDS.join(','),
+        },
+      },
+    );
 
-  return response.data.list;
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      // Handle error
+    }
+  }
 };

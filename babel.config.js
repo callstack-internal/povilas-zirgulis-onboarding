@@ -12,6 +12,7 @@ module.exports = {
           '@components': './src/components',
           '@services': './src/services',
           '@utils': './src/utils',
+          '@msw': './src/msw',
           '@assets': './assets',
         },
       },

@@ -2,13 +2,13 @@ import React from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import WeatherListScreen from '@screens/WeatherListScreen';
+import WeatherListScreen from '@screens/WeatherListScreen/WeatherListScreen';
 import {RootStackParamList} from '@utils/navigation.types';
-import WeatherDetailsScreen from '@screens/WeatherDetailsScreen';
+import WeatherDetailsScreen from '@screens/WeatherDetailsScreen/WeatherDetailsScreen';
 import {StyleSheet} from 'react-native';
 import {COLOR} from '@utils/colors';
 
-const Entry = () => {
+const RootNavigator = () => {
   const RootStack = createNativeStackNavigator<RootStackParamList>();
 
   return (
@@ -41,4 +41,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Entry;
+export default RootNavigator;

@@ -1,9 +1,9 @@
 import React from 'react';
 import {ScrollView} from 'react-native';
 
-import {weatherQueries} from '../services/weather';
+import {weatherQueries} from '@services/weather';
 import {useQuery} from '@tanstack/react-query';
-import WeatherListItem from '../components/WeatherListItem';
+import WeatherListItem from '@components/WeatherListItem';
 import Layout from '@components/Layout';
 import LoadingIndicator from '@components/LoadingIndicator';
 import ErrorDisplay from '@components/ErrorDisplay';
@@ -11,7 +11,7 @@ import EmptyResultsDisplay from '@components/EmptyResultsDisplay';
 
 const WeatherListScreen = () => {
   const weatherListQuery = useQuery(weatherQueries.weatherList());
-  const weatherList = weatherListQuery.data;
+  const weatherList = weatherListQuery.data?.list;
 
   if (weatherListQuery.isLoading) {
     return (
@@ -21,7 +21,7 @@ const WeatherListScreen = () => {
     );
   }
 
-  if (weatherListQuery.error) {
+  if (weatherListQuery.isError) {
     return (
       <Layout>
         <ErrorDisplay
@@ -43,8 +43,12 @@ const WeatherListScreen = () => {
   return (
     <Layout>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
-        {weatherList?.map(item => (
-          <WeatherListItem key={item.id} item={item} />
+        {weatherList?.map((item, index) => (
+          <WeatherListItem
+            key={item.id}
+            item={item}
+            testID={`city_name_${index}`}
+          />
         ))}
       </ScrollView>
     </Layout>

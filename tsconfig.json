@@ -7,6 +7,7 @@
       "@screens/*": ["src/screens/*"],
       "@services/*": ["src/services/*"],
       "@utils/*": ["src/utils/*"],
+      "@msw/*": ["src/msw/*"],
       "@assets/*": ["assets/*"]
     }
   }
