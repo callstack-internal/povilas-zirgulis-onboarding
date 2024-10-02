@@ -2,6 +2,7 @@ import axios from 'axios';
 import {queryOptions} from '@tanstack/react-query';
 import {Weather, WeatherListResponse} from '@utils/services.types';
 import {CITIES_IDS} from '@utils/constants';
+import {Location} from '@utils/location.types';
 
 export const apiInstance = axios.create({
   baseURL: 'https://api.openweathermap.org/data/2.5',
@@ -25,6 +26,16 @@ export const weatherQueries = {
       queryKey: ['cityWeather', id],
       queryFn: () => fetchCityWeather(id),
     }),
+  currentLocationWeather: (location: Location | undefined) =>
+    queryOptions({
+      queryKey: [
+        'currentLocationWeather',
+        location?.latitude,
+        location?.longitude,
+      ],
+      queryFn: () => fetchCurrentLocationWeather(location),
+      enabled: !!location,
+    }),
 };
 
 const fetchCityWeather = async (id: number) => {
@@ -38,7 +49,24 @@ const fetchCityWeather = async (id: number) => {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      // Handle error
+      console.error(error);
+    }
+  }
+};
+
+const fetchCurrentLocationWeather = async (location: Location | undefined) => {
+  try {
+    const response = await apiInstance.get<Weather>(cityWeatherRoute, {
+      params: {
+        lat: location?.latitude,
+        lon: location?.longitude,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error);
     }
   }
 };
@@ -57,7 +85,7 @@ const fetchWeatherList = async () => {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      // Handle error
+      console.error(error);
     }
   }
 };
