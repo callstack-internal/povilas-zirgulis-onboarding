@@ -2,12 +2,12 @@ import {QueryClientProvider} from '@tanstack/react-query';
 import React from 'react';
 
 import {rootQueryClient} from './src/utils/queryClient';
-import Entry from './src/Entry';
+import RootNavigator from './src/RootNavigator';
 
 const App = () => {
   return (
     <QueryClientProvider client={rootQueryClient}>
-      <Entry />
+      <RootNavigator />
     </QueryClientProvider>
   );
 };

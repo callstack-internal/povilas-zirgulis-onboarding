@@ -37,3 +37,8 @@ export type Weather = {
   id: number;
   name: string;
 };
+
+export type WeatherListResponse = {
+  list: Weather[];
+  cnt: number;
+};

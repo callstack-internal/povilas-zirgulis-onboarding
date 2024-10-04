@@ -7,10 +7,11 @@ import {COLOR} from '@utils/colors';
 
 type ListItemHeaderProps = {
   item: Weather | undefined;
+  testID?: string;
   hasArrow?: boolean;
 };
 
-const ListItemHeader = ({item, hasArrow}: ListItemHeaderProps) => {
+const ListItemHeader = ({item, hasArrow, testID}: ListItemHeaderProps) => {
   const latestWeather = item?.weather.at(0);
 
   return (
@@ -21,7 +22,9 @@ const ListItemHeader = ({item, hasArrow}: ListItemHeaderProps) => {
           style={styles.icon}
         />
         <View style={styles.textContainer}>
-          <Text style={styles.cityText}>{item?.name}</Text>
+          <Text style={styles.cityText} testID={testID}>
+            {item?.name}
+          </Text>
           <Text style={styles.conditionText}>{latestWeather?.main}</Text>
         </View>
       </View>
