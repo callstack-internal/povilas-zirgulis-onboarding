@@ -17,8 +17,8 @@ const WeatherListItem = ({item, testID}: WeatherListItemProps) => {
   };
 
   return (
-    <Pressable onPress={onPress} testID="WeatherListItem-pressable">
-      <ListItemHeader item={item} hasArrow />
+    <Pressable onPress={onPress}>
+      <ListItemHeader item={item} hasArrow testID={testID} />
     </Pressable>
   );
 };

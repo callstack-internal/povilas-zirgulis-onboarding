@@ -1,5 +1,5 @@
-import React from 'react';
-import {ScrollView} from 'react-native';
+import React, {useCallback} from 'react';
+import {FlatList} from 'react-native';
 
 import {weatherQueries} from '@services/weather';
 import {useQuery} from '@tanstack/react-query';
@@ -8,12 +8,35 @@ import Layout from '@components/Layout';
 import LoadingIndicator from '@components/LoadingIndicator';
 import ErrorDisplay from '@components/ErrorDisplay';
 import EmptyResultsDisplay from '@components/EmptyResultsDisplay';
+import {locationQueries} from '@services/location';
+import {Weather} from '@utils/services.types';
+import {isDefined} from '@utils/helpers';
 
 const WeatherListScreen = () => {
   const weatherListQuery = useQuery(weatherQueries.weatherList());
+  const currentLocationQuery = useQuery(locationQueries.currentLocation());
   const weatherList = weatherListQuery.data?.list;
+  const currentLocation = currentLocationQuery.data;
+  const currentLocationWeatherQuery = useQuery(
+    weatherQueries.currentLocationWeather(currentLocation),
+  );
 
-  if (weatherListQuery.isLoading) {
+  const currentLocationWeather = currentLocationWeatherQuery.data;
+
+  const weatherData = [currentLocationWeather, ...(weatherList || [])].filter(
+    isDefined,
+  );
+
+  const renderItem = useCallback(
+    ({item, index}: {item: Weather; index: number}) => (
+      <WeatherListItem item={item} testID={`city_name_${index}`} />
+    ),
+    [],
+  );
+
+  const keyExtractor = useCallback((item: Weather) => item?.id.toString(), []);
+
+  if (weatherListQuery.isLoading || currentLocationWeatherQuery.isLoading) {
     return (
       <Layout>
         <LoadingIndicator />
@@ -21,7 +44,7 @@ const WeatherListScreen = () => {
     );
   }
 
-  if (weatherListQuery.isError) {
+  if (weatherListQuery.error || currentLocationWeatherQuery.error) {
     return (
       <Layout>
         <ErrorDisplay
@@ -32,7 +55,7 @@ const WeatherListScreen = () => {
     );
   }
 
-  if (!weatherListQuery.isLoading && !weatherList?.length) {
+  if (!weatherListQuery.isLoading && !weatherData?.length) {
     return (
       <Layout>
         <EmptyResultsDisplay />
@@ -42,15 +65,11 @@ const WeatherListScreen = () => {
 
   return (
     <Layout>
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
-        {weatherList?.map((item, index) => (
-          <WeatherListItem
-            key={item.id}
-            item={item}
-            testID={`city_name_${index}`}
-          />
-        ))}
-      </ScrollView>
+      <FlatList
+        data={weatherData}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+      />
     </Layout>
   );
 };
