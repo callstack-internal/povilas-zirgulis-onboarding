@@ -1,0 +1,43 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build the app for simulator with debugging"
+  lane :build_for_testing do
+    cocoapods
+
+    puts "Current directory: #{Dir.pwd}"
+    puts "Xcode version: #{`xcodebuild -version`}"
+
+    derived_data_path = File.expand_path("./derived_data")
+    output_directory = File.join(derived_data_path, "Build", "Products")
+    puts "Derived data path: #{derived_data_path}"
+    puts "Output directory: #{output_directory}"
+
+    gym(
+      scheme: "weatherApp",
+      workspace: "weatherApp.xcworkspace",
+      configuration: "Debug",
+      destination: "generic/platform=iOS Simulator",
+      derived_data_path: derived_data_path,
+      output_directory: output_directory,
+      output_name: "weatherApp",
+      skip_archive: true,
+      skip_package_ipa: true,
+      include_symbols: false,
+      include_bitcode: false,
+      buildlog_path: derived_data_path,
+      xcargs: "MODULEMAP_FILE=$(pwd)/Pods/Headers/Public/RCTDeprecation/RCTDeprecation.modulemap",
+      verbose: true
+    )
+
+    puts "Contents of derived data directory:"
+    puts `find #{derived_data_path} -name "*.app"`
+
+    app_path = Dir.glob("#{output_directory}/Debug-iphonesimulator/*.app").first
+    if app_path
+      puts "App built successfully at: #{app_path}"
+    else
+      UI.user_error!("No .app file found in output directory")
+    end
+  end
+end

@@ -11,8 +11,8 @@ afterEach(() => server.resetHandlers());
 // Clean up after the tests are finished.
 afterAll(() => server.close());
 
-
 jest.mock('react-native-permissions', () =>
-    require('react-native-permissions/mock'),
+  require('react-native-permissions/mock'),
 );
-  
+
+jest.setTimeout(30000);

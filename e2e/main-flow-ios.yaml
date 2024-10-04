@@ -1,9 +1,19 @@
-appId: com.weatherapp
+appId: com.weatherApp.callstack
 ---
 - launchApp
+- waitForAnimationToEnd:
+    timeout: 30000
+- takeScreenshot: after_launch_and_wait
+- tapOn:
+    text: "Allow While Using App"
+- takeScreenshot: after_tap_allow
+- assertVisible:
+    id: "WeatherListItem-pressable"
+- takeScreenshot: after_assert_visible
 - tapOn:
     id: 'WeatherListItem-pressable'
     index: 0
+- takeScreenshot: after_first_tap
 - tapOn: 
     text: "Weather"
 - stopApp
