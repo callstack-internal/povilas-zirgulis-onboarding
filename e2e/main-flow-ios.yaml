@@ -1,0 +1,9 @@
+appId: com.weatherapp
+---
+- launchApp
+- tapOn:
+    id: 'WeatherListItem-pressable'
+    index: 0
+- tapOn: 
+    text: "Weather"
+- stopApp

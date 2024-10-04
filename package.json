@@ -1,5 +1,5 @@
 {
-  "name": "weatherApp",
+  "name": "weatherapp",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,9 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "test-e2e-ios": "maestro test e2e/main-flow-ios.yaml",
+    "test-e2e-android": "maestro test e2e/main-flow-android.yaml"
   },
   "dependencies": {
     "@react-navigation/native": "^6.1.18",
