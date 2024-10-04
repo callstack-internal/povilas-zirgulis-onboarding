@@ -1,0 +1,93 @@
+name: React Native iOS E2E Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test-ios:
+      name: e2e-ios-test
+      runs-on: macos-13
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_15.0.app/Contents/Developer
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Setup Ruby
+          uses: ruby/setup-ruby@v1
+          with:
+            ruby-version: '3.0'
+            bundler-cache: true
+  
+        - name: Setup Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: '18'
+            cache: 'yarn'
+
+        - name: Install dependencies
+          run: |
+            yarn install --frozen-lockfile
+            cd ios && bundle install
+
+        - name: Install CocoaPods
+          run: |
+            cd ios
+            pod install
+            cd ..
+
+        - name: Build iOS App
+          run: |
+            cd ios
+            xcodebuild -workspace weatherApp.xcworkspace -scheme weatherApp -configuration Release -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' build
+          env:
+            FASTLANE_DISABLE_COLORS: 1
+
+        - name: Boot Simulator and Launch App
+          run: |
+            UDID=$(xcrun simctl list devices | grep "iPhone 15" | grep -E -o -i "([0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})")
+            xcrun simctl boot $UDID
+            xcrun simctl list devices
+            APP_PATH=$(find $HOME/Library/Developer/Xcode/DerivedData -name "*.app" | grep -i "Build/Products/Release" | head -n 1)
+            BUNDLE_ID=$(defaults read "$APP_PATH/Info" CFBundleIdentifier)
+            xcrun simctl install $UDID "$APP_PATH"
+            xcrun simctl launch $UDID $BUNDLE_ID
+            sleep 30  # Give the app some time to fully launch
+
+        - name: Debug - Check Simulator and App Status
+          run: |
+            xcrun simctl list devices
+            xcrun simctl diagnose
+            ps aux | grep Simulator
+            ps aux | grep $BUNDLE_ID
+
+        - name: Install Maestro CLI
+          run: |
+            curl -Ls "https://get.maestro.mobile.dev" | bash
+            echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+            maestro --version
+
+        - name: Run tests
+          run: |
+            echo "Running Maestro tests..."
+            $HOME/.maestro/bin/maestro --host 127.0.0.1 --timeout 180 test e2e/main-flow-ios.yaml
+
+        - name: Upload Maestro logs
+          if: always()
+          uses: actions/upload-artifact@v4
+          with:
+            name: maestro-ios-logs
+            path: ~/.maestro/logs
+
+        - name: Upload build logs and app
+          if: always()
+          uses: actions/upload-artifact@v4
+          with:
+            name: ios-build-logs-and-app
+            path: |
+              ios/build
+              $HOME/Library/Developer/Xcode/DerivedData
