@@ -6,10 +6,10 @@ import {useNavigation} from '@react-navigation/native';
 
 type WeatherListItemProps = {
   item: Weather;
-  testID: string;
+  index: number;
 };
 
-const WeatherListItem = ({item, testID}: WeatherListItemProps) => {
+const WeatherListItem = ({item, index}: WeatherListItemProps) => {
   const navigation = useNavigation();
 
   const onPress = () => {
@@ -17,8 +17,8 @@ const WeatherListItem = ({item, testID}: WeatherListItemProps) => {
   };
 
   return (
-    <Pressable onPress={onPress}>
-      <ListItemHeader item={item} hasArrow testID={testID} />
+    <Pressable onPress={onPress} testID="WeatherListItem-pressable">
+      <ListItemHeader item={item} hasArrow testID={`city_name_${index}`} />
     </Pressable>
   );
 };

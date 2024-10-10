@@ -1,0 +1,21 @@
+
+default_platform(:android)
+
+# platform :android do
+#   desc "Build development APK"
+#   lane :build_dev do
+#     gradle(
+#       task: "clean assembleDebug",
+#       project_dir: "./"
+#     )
+#   end
+# end
+
+
+platform :android do
+  desc "Build and install the app"
+  lane :build_and_install do
+    gradle(task: "assembleDebug")
+    gradle(task: "installDebug")
+  end
+end
