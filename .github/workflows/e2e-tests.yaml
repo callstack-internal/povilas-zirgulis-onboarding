@@ -1,0 +1,97 @@
+name: React Native iOS E2E Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  test-ios:
+      name: e2e-ios-test
+      runs-on: macos-latest-xlarge
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_15.0.app/Contents/Developer
+        MAESTRO_ENVIRONMENT: ios
+        WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Setup Ruby
+          uses: ruby/setup-ruby@v1
+          with:
+            ruby-version: '3.0'
+            bundler-cache: true
+  
+        - name: Setup Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: '18'
+            cache: 'yarn'
+
+        - name: Install dependencies
+          run: |
+            yarn install --frozen-lockfile
+            cd ios && bundle install
+
+        - name: Install CocoaPods
+          run: |
+            cd ios
+            pod install
+            cd ..
+
+        - name: Install Maestro CLI
+          run: |
+            curl -Ls "https://get.maestro.mobile.dev" | bash
+            brew tap facebook/fb
+            brew install facebook/fb/idb-companion
+
+        - name: Add Maestro to path
+          run: |
+            echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+            echo "Verifying Maestro installation..."
+            $HOME/.maestro/bin/maestro --version
+
+        - name: List available simulators
+          run: xcrun simctl list devices
+
+        - name: Build and Run iOS App
+          run: |
+            npx react-native run-ios --mode=Release --simulator="iPhone 15"
+            sleep 90  # Increased wait time to ensure app is fully launched
+
+        - name: Check Simulator status
+          run: xcrun simctl list devices | grep Booted
+
+        - name: Check Maestro environment
+          run: echo $MAESTRO_ENVIRONMENT
+
+        - name: Run Maestro tests
+          run: |
+            echo "Running Maestro tests..."
+            export MAESTRO_DRIVER_STARTUP_TIMEOUT=240000
+            export MAESTRO_CLI_NO_ANALYTICS=1
+            $HOME/.maestro/bin/maestro test e2e/main-flow-ios.yaml
+
+        - name: Upload Maestro logs
+          if: always()
+          uses: actions/upload-artifact@v4
+          with:
+            name: maestro-ios-logs
+            path: ~/.maestro/logs
+
+        - name: Upload Maestro artifacts
+          uses: actions/upload-artifact@v4
+          if: always()
+          with:
+            name: maestro-screenshots
+            path: ~/.maestro/tests/**/*.png
+
+        - name: Upload build logs and app
+          if: always()
+          uses: actions/upload-artifact@v4
+          with:
+            name: ios-build-logs-and-app
+            path: ios/build

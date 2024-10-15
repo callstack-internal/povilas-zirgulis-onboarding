@@ -3,12 +3,13 @@ import {queryOptions} from '@tanstack/react-query';
 import {Weather, WeatherListResponse} from '@utils/services.types';
 import {CITIES_IDS} from '@utils/constants';
 import {Location} from '@utils/location.types';
+import Config from 'react-native-config';
 
 export const apiInstance = axios.create({
   baseURL: 'https://api.openweathermap.org/data/2.5',
   params: {
     units: 'metric',
-    appId: process.env.WEATHER_API_KEY,
+    appId: Config.WEATHER_API_KEY,
   },
 });
 
