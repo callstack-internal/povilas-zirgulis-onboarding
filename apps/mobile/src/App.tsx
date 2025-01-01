@@ -1,8 +1,8 @@
 import {QueryClientProvider} from '@tanstack/react-query';
 import React from 'react';
 
-import {rootQueryClient} from './src/utils/queryClient';
-import RootNavigator from './src/RootNavigator';
+import {rootQueryClient} from '@utils/queryClient';
+import RootNavigator from './RootNavigator';
 
 const App = () => {
   return (

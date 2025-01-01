@@ -1,14 +1,17 @@
+import {WEATHER_API_KEY} from '@env';
 import axios from 'axios';
 import {queryOptions} from '@tanstack/react-query';
 import {Weather, WeatherListResponse} from '@utils/services.types';
 import {CITIES_IDS} from '@utils/constants';
 import {Location} from '@utils/location.types';
 
-export const apiInstance = axios.create({
+console.log('WEATHER_API_KEY', WEATHER_API_KEY);
+
+const weatherApi = axios.create({
   baseURL: 'https://api.openweathermap.org/data/2.5',
   params: {
+    appId: WEATHER_API_KEY,
     units: 'metric',
-    appId: process.env.WEATHER_API_KEY,
   },
 });
 
@@ -40,7 +43,7 @@ export const weatherQueries = {
 
 const fetchCityWeather = async (id: number) => {
   try {
-    const response = await apiInstance.get<Weather>(cityWeatherRoute, {
+    const response = await weatherApi.get<Weather>(cityWeatherRoute, {
       params: {
         id,
       },
@@ -56,7 +59,7 @@ const fetchCityWeather = async (id: number) => {
 
 const fetchCurrentLocationWeather = async (location: Location | undefined) => {
   try {
-    const response = await apiInstance.get<Weather>(cityWeatherRoute, {
+    const response = await weatherApi.get<Weather>(cityWeatherRoute, {
       params: {
         lat: location?.latitude,
         lon: location?.longitude,
@@ -73,7 +76,7 @@ const fetchCurrentLocationWeather = async (location: Location | undefined) => {
 
 const fetchWeatherList = async () => {
   try {
-    const response = await apiInstance.get<WeatherListResponse>(
+    const response = await weatherApi.get<WeatherListResponse>(
       weatherListRoute,
       {
         params: {
