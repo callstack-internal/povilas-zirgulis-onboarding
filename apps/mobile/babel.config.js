@@ -8,14 +8,14 @@ module.exports = {
         root: ['./src'],
         extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
         alias: {
-          '@screens': './src/screens',
           '@components': './src/components',
+          '@screens': './src/screens',
           '@services': './src/services',
           '@utils': './src/utils',
           '@msw': './src/msw',
-          '@assets': './assets',
-        },
-      },
-    ],
-  ],
+          '@assets': './assets'
+        }
+      }
+    ]
+  ]
 };
