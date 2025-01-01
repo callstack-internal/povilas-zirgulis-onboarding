@@ -5,8 +5,6 @@ import {Weather, WeatherListResponse} from '@utils/services.types';
 import {CITIES_IDS} from '@utils/constants';
 import {Location} from '@utils/location.types';
 
-console.log('WEATHER_API_KEY', WEATHER_API_KEY);
-
 const weatherApi = axios.create({
   baseURL: 'https://api.openweathermap.org/data/2.5',
   params: {

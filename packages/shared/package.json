@@ -10,8 +10,12 @@
     "lint": "eslint src/",
     "dev": "tsc --watch"
   },
+  "dependencies": {
+    "axios": "^1.7.3"
+  },
   "devDependencies": {
     "typescript": "^5.0.4",
-    "eslint": "^8.19.0"
+    "eslint": "^8.19.0",
+    "@types/node": "^20.0.0"
   }
 } 
