@@ -1,6 +1,6 @@
 import {queryOptions} from '@tanstack/react-query';
-import LocationModule from '@utils/location.types';
-import {checkLocationPermissions} from '@utils/permissions';
+import LocationModule from '@repo/apps/mobile/src/utils/location.types';
+import {checkLocationPermissions} from '@repo/apps/mobile/src/utils/permissions';
 
 export const locationQueries = {
   currentLocation: () =>

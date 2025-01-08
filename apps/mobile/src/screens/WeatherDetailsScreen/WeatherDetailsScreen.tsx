@@ -1,21 +1,25 @@
 import React from 'react';
-import ListItemHeader from '@components/ListItemHeader';
 import {StyleSheet, Text, View} from 'react-native';
 import {useQuery} from '@tanstack/react-query';
 import {useRoute} from '@react-navigation/native';
-import {RootStackParamList} from '@utils/navigation.types';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {weatherQueries} from '@services/weather';
-import Layout from '@components/Layout';
-import LoadingIndicator from '@components/LoadingIndicator';
-import ErrorDisplay from '@components/ErrorDisplay';
-import EmptyResultsDisplay from '@components/EmptyResultsDisplay';
-import {COLOR} from '@utils/colors';
+import {WEATHER_API_KEY} from '@env';
+
+import ListItemHeader from '@repo/apps/mobile/src/components/ListItemHeader';
+import Layout from '@repo/apps/mobile/src/components/Layout';
+import LoadingIndicator from '@repo/apps/mobile/src/components/LoadingIndicator';
+import ErrorDisplay from '@repo/apps/mobile/src/components/ErrorDisplay';
+import EmptyResultsDisplay from '@repo/apps/mobile/src/components/EmptyResultsDisplay';
+import {RootStackParamList} from '@repo/apps/mobile/src/utils/navigation.types';
+import {COLOR} from '@repo/apps/mobile/src/utils/colors';
+import {createWeatherApi} from '@repo/packages/shared/src/api/weatherApi';
 
 type WeatherDetailsScreenProps = NativeStackScreenProps<
   RootStackParamList,
   'WeatherDetails'
 >;
+
+const {weatherQueries} = createWeatherApi(WEATHER_API_KEY);
 
 const WeatherDetailsScreen = () => {
   const route = useRoute<WeatherDetailsScreenProps['route']>();

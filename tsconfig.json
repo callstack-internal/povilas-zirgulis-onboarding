@@ -3,10 +3,21 @@
     "target": "es2017",
     "module": "commonjs",
     "lib": ["es2017", "dom"],
+    "jsx": "react-native",
     "declaration": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@repo/*": ["./*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "references": [
+    { "path": "./apps/mobile" },
+    { "path": "./packages/shared" }
+  ]
 }

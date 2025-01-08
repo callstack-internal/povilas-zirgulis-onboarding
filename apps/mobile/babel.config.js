@@ -1,5 +1,7 @@
 module.exports = {
-  presets: ['module:@react-native/babel-preset'],
+  presets: [
+    'module:@react-native/babel-preset'
+  ],
   plugins: [
     ['module:react-native-dotenv', {
       moduleName: '@env',
@@ -9,24 +11,16 @@ module.exports = {
       safe: false,
       allowUndefined: false,
     }],
-    ['@babel/plugin-transform-runtime', {
-      helpers: true,
-      regenerator: true
-    }],
     [
       'module-resolver',
       {
         root: ['.'],
-        extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
+        extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json', '.svg'],
         alias: {
-          '@components': './src/components',
-          '@screens': './src/screens',
-          '@services': './src/services',
-          '@utils': './src/utils',
-          '@msw': './src/msw',
+          '@repo': '../..',
           '@assets': './assets'
         }
       }
     ]
   ]
-};
+}; 

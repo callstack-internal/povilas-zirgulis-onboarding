@@ -7,13 +7,19 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
-    "dev:mobile": "cd apps/mobile && yarn start",
+    "ios": "turbo run ios",
+    "android": "turbo run android",
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/plugin-transform-runtime": "^7.25.9",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/preset-typescript": "^7.23.3",
+    "@babel/runtime": "^7.26.0",
     "turbo": "^1.11.2"
   },
   "packageManager": "yarn@1.22.19"

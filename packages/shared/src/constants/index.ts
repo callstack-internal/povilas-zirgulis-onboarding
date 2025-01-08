@@ -15,7 +15,8 @@ export const API_CONFIG = {
   defaultParams: {
     units: 'metric',
   },
-};
+  defaultCityIds: CITIES_IDS,
+} as const;
 
 export const COLORS = {
   primary: '#1e88e5',

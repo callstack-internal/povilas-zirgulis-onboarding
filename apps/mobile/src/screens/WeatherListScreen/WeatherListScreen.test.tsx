@@ -1,12 +1,12 @@
 import {fireEvent, render, screen} from '@testing-library/react-native';
-import {generateWeatherListMockData} from '@utils/mockData';
+import {generateWeatherListMockData} from '@repo/apps/mobile/src/utils/mockData';
 import {
   setupEmptyResultsHandler,
   setErrorWeatherListHandler,
   setSuccessWeatherListHandler,
 } from './WeatherListScreen.msw';
 import React from 'react';
-import {rootQueryClient} from '@utils/queryClient';
+import {rootQueryClient} from '@repo/apps/mobile/src/utils/queryClient';
 import {QueryClientProvider} from '@tanstack/react-query';
 import RootNavigator from '../../RootNavigator';
 

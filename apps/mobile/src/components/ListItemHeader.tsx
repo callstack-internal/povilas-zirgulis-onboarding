@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 import ArrowRightIcon from '@assets/icons/arrow-right.svg';
-import TemperaturePill from '@components/TemperaturePill';
-import {Weather} from '@utils/services.types';
-import {COLOR} from '@utils/colors';
+import TemperaturePill from '@repo/apps/mobile/src/components/TemperaturePill';
+import {Weather} from '@repo/packages/shared/src/types';
+import {COLOR} from '@repo/apps/mobile/src/utils/colors';
 
 type ListItemHeaderProps = {
   item: Weather | undefined;

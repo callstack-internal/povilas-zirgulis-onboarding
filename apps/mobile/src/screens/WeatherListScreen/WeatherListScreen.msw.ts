@@ -1,6 +1,6 @@
 import {http, HttpResponse} from 'msw';
 import {server} from '@msw/server';
-import {WeatherListResponse} from '@utils/services.types';
+import {WeatherListResponse} from '@repo/apps/mobile/src/utils/services.types';
 import {apiInstance, weatherListRoute} from '@services/weather';
 
 const url = `${apiInstance.defaults.baseURL}${weatherListRoute}`;

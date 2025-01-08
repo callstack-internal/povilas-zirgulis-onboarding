@@ -1,8 +1,8 @@
 import React from 'react';
 import {Pressable} from 'react-native';
-import ListItemHeader from '@components/ListItemHeader';
-import {Weather} from '@utils/services.types';
 import {useNavigation} from '@react-navigation/native';
+import ListItemHeader from '@repo/apps/mobile/src/components/ListItemHeader';
+import {Weather} from '@repo/packages/shared/src/types';
 
 type WeatherListItemProps = {
   item: Weather;

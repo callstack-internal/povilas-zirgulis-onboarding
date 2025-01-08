@@ -1,9 +1,9 @@
 import {render, screen, waitFor} from '@testing-library/react-native';
 
 import React from 'react';
-import {rootQueryClient} from '@utils/queryClient';
+import {rootQueryClient} from '@repo/apps/mobile/src/utils/queryClient';
 import {QueryClientProvider} from '@tanstack/react-query';
-import {getWeatherMockData} from '@utils/mockData';
+import {getWeatherMockData} from '@repo/apps/mobile/src/utils/mockData';
 import {
   setErrorCityWeatherHandler,
   setSuccessCityWeatherHandler,
@@ -12,7 +12,7 @@ import {
 import {NavigationContainer} from '@react-navigation/native';
 import WeatherDetailsScreen from './WeatherDetailsScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {RootStackParamList} from '@utils/navigation.types';
+import {RootStackParamList} from '@repo/apps/mobile/src/utils/navigation.types';
 
 const mockCityWeatherData = getWeatherMockData();
 

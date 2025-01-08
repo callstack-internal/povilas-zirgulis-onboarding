@@ -1,32 +1,44 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+const {getDefaultConfig} = require('@react-native/metro-config');
 const path = require('path');
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 
 const defaultConfig = getDefaultConfig(__dirname);
-const {assetExts, sourceExts} = defaultConfig.resolver;
 
 const config = {
+  ...defaultConfig,
+  projectRoot,
   transformer: {
+    ...defaultConfig.transformer,
     babelTransformerPath: require.resolve('react-native-svg-transformer'),
   },
   resolver: {
-    assetExts: assetExts.filter(ext => ext !== 'svg'),
-    sourceExts: [...sourceExts, 'svg'],
+    ...defaultConfig.resolver,
+    assetExts: [...defaultConfig.resolver.assetExts.filter(ext => ext !== 'svg'), 'png', 'jpg', 'jpeg'],
+    sourceExts: [...defaultConfig.resolver.sourceExts, 'svg'],
     nodeModulesPaths: [
       path.resolve(projectRoot, 'node_modules'),
       path.resolve(workspaceRoot, 'node_modules'),
     ],
+    resolveRequest: (context, moduleName, platform) => {
+      if (moduleName.startsWith('@repo/')) {
+        const resolvedPath = path.resolve(
+          workspaceRoot,
+          moduleName.replace('@repo/', '')
+        );
+        return {
+          filePath: resolvedPath,
+          type: 'sourceFile',
+        };
+      }
+      return context.resolveRequest(context, moduleName, platform);
+    }
   },
   watchFolders: [
-    projectRoot,
     workspaceRoot,
-    path.resolve(workspaceRoot, 'packages/shared'),
+    path.resolve(projectRoot, 'assets')
   ],
 };
 
-module.exports = mergeConfig(
-  getDefaultConfig(__dirname),
-  config,
-);
+module.exports = config;
