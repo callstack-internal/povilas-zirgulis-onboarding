@@ -1,13 +1,11 @@
 import {http, HttpResponse} from 'msw';
-import {server} from '@msw/server';
-import {Weather} from '@repo/apps/mobile/src/utils/services.types';
-import {apiInstance, cityWeatherRoute} from '@services/weather';
-
-const url = `${apiInstance.defaults.baseURL}${cityWeatherRoute}`;
+import {server} from '@repo/apps/mobile/src/msw/server';
+import {Weather} from '@repo/shared/src/types';
+import {API_CONFIG} from '@repo/shared/src/constants';
 
 export const setSuccessCityWeatherHandler = (cityWeatherResponse: Weather) => {
   server.use(
-    http.get(url, () => {
+    http.get(API_CONFIG.routes.weather, () => {
       return HttpResponse.json(cityWeatherResponse);
     }),
   );
@@ -15,7 +13,7 @@ export const setSuccessCityWeatherHandler = (cityWeatherResponse: Weather) => {
 
 export const setErrorCityWeatherHandler = () => {
   server.use(
-    http.get(url, () => {
+    http.get(API_CONFIG.routes.weather, () => {
       return HttpResponse.json(null, {status: 500});
     }),
   );
@@ -23,7 +21,7 @@ export const setErrorCityWeatherHandler = () => {
 
 export const setupEmptyResultsHandler = () => {
   server.use(
-    http.get(url, () => {
+    http.get(API_CONFIG.routes.weather, () => {
       return HttpResponse.json(null, {status: 200});
     }),
   );

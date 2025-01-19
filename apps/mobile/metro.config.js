@@ -22,6 +22,16 @@ const config = {
       path.resolve(workspaceRoot, 'node_modules'),
     ],
     resolveRequest: (context, moduleName, platform) => {
+      if (moduleName.startsWith('@assets/')) {
+        const assetPath = path.resolve(
+          projectRoot,
+          moduleName.replace('@assets/', 'assets/')
+        );
+        return {
+          filePath: assetPath,
+          type: 'sourceFile',
+        };
+      }
       if (moduleName.startsWith('@repo/')) {
         const resolvedPath = path.resolve(
           workspaceRoot,

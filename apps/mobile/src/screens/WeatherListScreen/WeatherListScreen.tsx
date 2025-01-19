@@ -2,8 +2,7 @@ import React, {useCallback} from 'react';
 import {FlatList} from 'react-native';
 import {useQuery} from '@tanstack/react-query';
 import {Weather} from '@repo/packages/shared/src/types';
-import {createWeatherApi} from '@repo/packages/shared/src/api/weatherApi';
-import {WEATHER_API_KEY} from '@env';
+import {weatherQueries} from '@repo/packages/shared/src/api/weatherApi';
 
 import WeatherListItem from '@repo/apps/mobile/src/components/WeatherListItem';
 import Layout from '@repo/apps/mobile/src/components/Layout';
@@ -12,8 +11,6 @@ import ErrorDisplay from '@repo/apps/mobile/src/components/ErrorDisplay';
 import EmptyResultsDisplay from '@repo/apps/mobile/src/components/EmptyResultsDisplay';
 import {locationQueries} from '@repo/apps/mobile/src/services/location';
 import {isDefined} from '@repo/apps/mobile/src/utils/helpers';
-
-const {weatherQueries} = createWeatherApi(WEATHER_API_KEY);
 
 const WeatherListScreen = () => {
   const weatherListQuery = useQuery(weatherQueries.weatherList());
