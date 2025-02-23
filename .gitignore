@@ -75,4 +75,3 @@ ios/fastlane/
 !.yarn/versions
 
 .env
-.history

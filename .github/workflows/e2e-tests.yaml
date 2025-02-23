@@ -14,7 +14,6 @@ jobs:
       env:
         DEVELOPER_DIR: /Applications/Xcode_15.0.app/Contents/Developer
         MAESTRO_ENVIRONMENT: ios
-        NODE_ENV: production
         WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
       steps:
         - name: Checkout code
@@ -32,41 +31,12 @@ jobs:
             node-version: '18'
             cache: 'yarn'
 
-        # Cache CocoaPods
-        - name: Cache CocoaPods
-          id: cache-cocoapods
-          uses: actions/cache@v3
-          with:
-            path: ios/Pods
-            key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-pods-
-
-        # Cache Derived Data
-        - name: Cache Derived Data
-          uses: actions/cache@v3
-          with:
-            path: ~/Library/Developer/Xcode/DerivedData
-            key: ${{ runner.os }}-derived-data-${{ hashFiles('ios/Podfile.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-derived-data-
-
-        # Cache iOS build
-        - name: Cache iOS build
-          uses: actions/cache@v3
-          with:
-            path: ios/build
-            key: ${{ runner.os }}-ios-build-${{ github.sha }}
-            restore-keys: |
-              ${{ runner.os }}-ios-build-
-
         - name: Install dependencies
           run: |
             yarn install --frozen-lockfile
             cd ios && bundle install
 
         - name: Install CocoaPods
-          if: steps.cache-cocoapods.outputs.cache-hit != 'true'
           run: |
             cd ios
             pod install
@@ -89,19 +59,11 @@ jobs:
 
         - name: Build and Run iOS App
           run: |
-            export NODE_ENV=production
             npx react-native run-ios --mode=Release --simulator="iPhone 15"
             sleep 90  # Increased wait time to ensure app is fully launched
 
         - name: Check Simulator status
           run: xcrun simctl list devices | grep Booted
-
-        - name: Check Environment Variables
-          run: |
-            echo "Checking environment setup..."
-            echo "NODE_ENV: $NODE_ENV"
-            echo "MAESTRO_ENVIRONMENT: $MAESTRO_ENVIRONMENT"
-            echo "WEATHER_API_KEY is set: $([[ ! -z "${WEATHER_API_KEY}" ]] && echo 'true' || echo 'false')"
 
         - name: Check Maestro environment
           run: echo $MAESTRO_ENVIRONMENT
