@@ -10,14 +10,38 @@ on:
 jobs:
   test-ios:
       name: e2e-ios-test
-      runs-on: macos-latest-xlarge
+      runs-on: macos-latest
+      environment: production
       env:
         DEVELOPER_DIR: /Applications/Xcode_15.0.app/Contents/Developer
         MAESTRO_ENVIRONMENT: ios
+        NODE_ENV: production
         WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
+        
+        - name: Verify environment and secrets
+          run: |
+            echo "Current NODE_ENV: $NODE_ENV"
+            echo "API Key present: $([[ ! -z "${WEATHER_API_KEY}" ]] && echo "true" || echo "false")"
+
+        - name: Clean build caches
+          run: |
+            rm -rf ~/Library/Developer/Xcode/DerivedData/*
+            rm -rf ~/Library/Caches/com.apple.dt.Xcode/*
+            rm -rf ~/Library/Developer/Xcode/ModuleCache.noindex/*
+            rm -rf ~/Library/Caches/CocoaPods/*
+            rm -rf ios/build
+            rm -rf ios/Pods
+            rm -rf ios/DerivedData
+            rm -rf ~/Library/Developer/CoreSimulator/Caches/
+            pod cache clean --all
+            yarn cache clean
+            rm -rf $TMPDIR/react-*
+            rm -rf $TMPDIR/metro-*
+            rm -rf $TMPDIR/haste-map-*
+            echo "All build caches have been cleaned"
         
         - name: Setup Ruby
           uses: ruby/setup-ruby@v1
@@ -39,7 +63,11 @@ jobs:
         - name: Install CocoaPods
           run: |
             cd ios
-            pod install
+            pod deintegrate
+            pod cache clean --all
+            rm -rf Pods
+            rm -rf Podfile.lock
+            pod install --repo-update --verbose
             cd ..
 
         - name: Install Maestro CLI
