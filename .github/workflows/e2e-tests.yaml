@@ -20,56 +20,69 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v4
         
+        - name: Debug directory structure
+          run: |
+            echo "Current directory:"
+            pwd
+            echo "\nDirectory contents:"
+            ls -la
+            echo "\nFull tree:"
+            find . -maxdepth 3 -type d
+
         - name: Setup Ruby
           uses: ruby/setup-ruby@v1
           with:
             ruby-version: '3.0'
             bundler-cache: true
-  
+
+        - name: Install xcpretty
+          run: gem install xcpretty
+
         - name: Setup Node.js
           uses: actions/setup-node@v4
           with:
             node-version: '18'
             cache: 'yarn'
 
-        # Cache CocoaPods
+        - name: Install dependencies
+          run: |
+            for i in 1 2 3; do
+              echo "Attempt $i: Installing dependencies..."
+              yarn install && break || {
+                if [ $i -lt 3 ]; then
+                  echo "Retry in 30 seconds..."
+                  sleep 30
+                else
+                  echo "Failed after 3 attempts"
+                  exit 1
+                fi
+              }
+            done
+            cd ios && bundle install && cd ..
+
         - name: Cache CocoaPods
-          id: cache-cocoapods
+          id: pods-cache
           uses: actions/cache@v3
           with:
-            path: ios/Pods
+            path: |
+              ios/Pods
+              ~/Library/Caches/CocoaPods
             key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
             restore-keys: |
               ${{ runner.os }}-pods-
 
-        # Cache Derived Data
-        - name: Cache Derived Data
-          uses: actions/cache@v3
-          with:
-            path: ~/Library/Developer/Xcode/DerivedData
-            key: ${{ runner.os }}-derived-data-${{ hashFiles('ios/Podfile.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-derived-data-
-
-        # Cache iOS build
-        - name: Cache iOS build
-          uses: actions/cache@v3
-          with:
-            path: ios/build
-            key: ${{ runner.os }}-ios-build-${{ github.sha }}
-            restore-keys: |
-              ${{ runner.os }}-ios-build-
-
-        - name: Install dependencies
-          run: |
-            yarn install --frozen-lockfile
-            cd ios && bundle install
-
         - name: Install CocoaPods
-          if: steps.cache-cocoapods.outputs.cache-hit != 'true'
+          if: steps.pods-cache.outputs.cache-hit != 'true'
           run: |
             cd ios
             pod install
+            cd ..
+
+        - name: Clean Xcode caches
+          run: |
+            cd ios
+            rm -rf ~/Library/Developer/Xcode/ModuleCache.noindex/*
+            xcodebuild clean -workspace weatherApp.xcworkspace -scheme weatherApp
             cd ..
 
         - name: Install Maestro CLI
@@ -77,59 +90,53 @@ jobs:
             curl -Ls "https://get.maestro.mobile.dev" | bash
             brew tap facebook/fb
             brew install facebook/fb/idb-companion
-
-        - name: Add Maestro to path
-          run: |
             echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-            echo "Verifying Maestro installation..."
-            $HOME/.maestro/bin/maestro --version
 
-        - name: List available simulators
-          run: xcrun simctl list devices
-
-        - name: Build and Run iOS App
+        - name: Build iOS App
           run: |
-            export NODE_ENV=production
-            npx react-native run-ios --mode=Release --simulator="iPhone 15"
-            sleep 90  # Increased wait time to ensure app is fully launched
+            cd ios
+            # First build to generate module maps
+            xcodebuild \
+              -workspace weatherApp.xcworkspace \
+              -scheme weatherApp \
+              -configuration Release \
+              -destination 'platform=iOS Simulator,name=iPhone 15' \
+              build \
+              COMPILER_INDEX_STORE_ENABLE=NO \
+              | xcpretty
+            cd ..
 
-        - name: Check Simulator status
-          run: xcrun simctl list devices | grep Booted
-
-        - name: Check Environment Variables
+        - name: Start Metro and Run App
           run: |
-            echo "Checking environment setup..."
-            echo "NODE_ENV: $NODE_ENV"
-            echo "MAESTRO_ENVIRONMENT: $MAESTRO_ENVIRONMENT"
-            echo "WEATHER_API_KEY is set: $([[ ! -z "${WEATHER_API_KEY}" ]] && echo 'true' || echo 'false')"
-
-        - name: Check Maestro environment
-          run: echo $MAESTRO_ENVIRONMENT
+            # Start metro in background
+            yarn start > metro.log 2>&1 &
+            METRO_PID=$!
+            echo "Waiting for Metro to be ready..."
+            while ! grep -q "Metro waiting on" metro.log; do
+              if ! kill -0 $METRO_PID 2>/dev/null; then
+                echo "Metro process died"
+                cat metro.log
+                exit 1
+              fi
+              sleep 1
+            done
+            # Run the app
+            npx react-native run-ios --mode=Release --simulator="iPhone 15" --verbose --no-packager
+            sleep 90
 
         - name: Run Maestro tests
           run: |
-            echo "Running Maestro tests..."
             export MAESTRO_DRIVER_STARTUP_TIMEOUT=240000
             export MAESTRO_CLI_NO_ANALYTICS=1
             $HOME/.maestro/bin/maestro test e2e/main-flow-ios.yaml
 
-        - name: Upload Maestro logs
+        - name: Upload logs and artifacts
           if: always()
           uses: actions/upload-artifact@v4
           with:
-            name: maestro-ios-logs
-            path: ~/.maestro/logs
-
-        - name: Upload Maestro artifacts
-          uses: actions/upload-artifact@v4
-          if: always()
-          with:
-            name: maestro-screenshots
-            path: ~/.maestro/tests/**/*.png
-
-        - name: Upload build logs and app
-          if: always()
-          uses: actions/upload-artifact@v4
-          with:
-            name: ios-build-logs-and-app
-            path: ios/build
+            name: test-artifacts
+            path: |
+              metro.log
+              .maestro/logs/**
+              .maestro/tests/**/*.png
+              ios/build
