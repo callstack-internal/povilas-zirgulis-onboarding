@@ -59,6 +59,12 @@ target 'weatherApp' do
           config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
           config.build_settings['HEADER_SEARCH_PATHS'] << "${PODS_ROOT}/Headers/Public/React-Core"
         end
+
+        # Handle RCTDeprecation
+        if target.name == 'React-Core'
+          config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -Xcc -fmodule-map-file="${PODS_ROOT}/Headers/Public/React/React-Core.modulemap"'
+          config.build_settings['SWIFT_INCLUDE_PATHS'] = '$(inherited) "${PODS_ROOT}/Headers/Public/React-Core"'
+        end
       end
     end
   end

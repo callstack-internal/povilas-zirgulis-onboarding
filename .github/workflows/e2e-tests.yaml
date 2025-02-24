@@ -28,19 +28,30 @@ jobs:
 
         - name: Clean build caches
           run: |
+            # Clean Xcode caches thoroughly
             rm -rf ~/Library/Developer/Xcode/DerivedData/*
             rm -rf ~/Library/Caches/com.apple.dt.Xcode/*
             rm -rf ~/Library/Developer/Xcode/ModuleCache.noindex/*
+            sudo rm -rf /Users/runner/Library/Developer/Xcode/DerivedData/*
+            sudo rm -rf /Users/runner/Library/Developer/Xcode/ModuleCache.noindex/*
+            
+            # Clean CocoaPods
             rm -rf ~/Library/Caches/CocoaPods/*
             rm -rf ios/build
             rm -rf ios/Pods
             rm -rf ios/DerivedData
+            
+            # Clean simulator
             rm -rf ~/Library/Developer/CoreSimulator/Caches/
+            xcrun simctl erase all
+            
+            # Clean other caches
             pod cache clean --all
             yarn cache clean
             rm -rf $TMPDIR/react-*
             rm -rf $TMPDIR/metro-*
             rm -rf $TMPDIR/haste-map-*
+            
             echo "All build caches have been cleaned"
         
         - name: Setup Ruby
@@ -67,6 +78,8 @@ jobs:
             pod cache clean --all
             rm -rf Pods
             rm -rf Podfile.lock
+            # Setup CocoaPods repo properly
+            pod repo list | grep -q trunk || pod setup
             pod install --repo-update --verbose
             cd ..
 
