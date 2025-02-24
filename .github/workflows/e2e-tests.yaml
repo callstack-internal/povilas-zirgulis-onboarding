@@ -10,14 +10,22 @@ on:
 jobs:
   test-ios:
       name: e2e-ios-test
-      runs-on: macos-latest-xlarge
+      runs-on: macos-latest
+      environment: production
       env:
         DEVELOPER_DIR: /Applications/Xcode_15.0.app/Contents/Developer
         MAESTRO_ENVIRONMENT: ios
+        NODE_ENV: production
         WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+        RCT_NO_LAUNCH_PACKAGER: true
       steps:
         - name: Checkout code
           uses: actions/checkout@v4
+        
+        - name: Verify environment and secrets
+          run: |
+            echo "Current NODE_ENV: $NODE_ENV"
+            echo "API Key present: $([[ ! -z "${WEATHER_API_KEY}" ]] && echo "true" || echo "false")"
         
         - name: Setup Ruby
           uses: ruby/setup-ruby@v1
@@ -39,7 +47,9 @@ jobs:
         - name: Install CocoaPods
           run: |
             cd ios
-            pod install
+            rm -rf Pods Podfile.lock
+            pod repo update
+            pod install --verbose
             cd ..
 
         - name: Install Maestro CLI
@@ -59,8 +69,14 @@ jobs:
 
         - name: Build and Run iOS App
           run: |
-            npx react-native run-ios --mode=Release --simulator="iPhone 15"
-            sleep 90  # Increased wait time to ensure app is fully launched
+            cd ios
+            bundle exec fastlane build_for_testing
+            xcrun simctl boot "iPhone 15"
+            xcrun simctl privacy "iPhone 15" reset all
+            xcrun simctl install booted Fastlane/derived_data/Build/Products/Release-iphonesimulator/weatherApp.app
+            xcrun simctl privacy "iPhone 15" grant location com.weatherApp.callstack
+            xcrun simctl launch booted com.weatherApp.callstack
+            sleep 90  # Wait for app to launch
 
         - name: Check Simulator status
           run: xcrun simctl list devices | grep Booted

@@ -13,10 +13,14 @@ platform :ios do
     puts "Derived data path: #{derived_data_path}"
     puts "Output directory: #{output_directory}"
 
+    # Create release JS bundle
+    puts "Creating release JS bundle..."
+    sh("cd .. && yarn react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios")
+
     gym(
       scheme: "weatherApp",
       workspace: "weatherApp.xcworkspace",
-      configuration: "Debug",
+      configuration: "Release",
       destination: "generic/platform=iOS Simulator",
       derived_data_path: derived_data_path,
       output_directory: output_directory,
@@ -26,18 +30,47 @@ platform :ios do
       include_symbols: false,
       include_bitcode: false,
       buildlog_path: derived_data_path,
-      xcargs: "MODULEMAP_FILE=$(pwd)/Pods/Headers/Public/RCTDeprecation/RCTDeprecation.modulemap",
+      xcargs: [
+        "MODULEMAP_FILE=$(pwd)/Pods/Headers/Public/RCTDeprecation/RCTDeprecation.modulemap",
+        "RCT_NO_LAUNCH_PACKAGER=true",
+        "DEAD_CODE_STRIPPING=YES",
+        "ENABLE_BITCODE=NO",
+        "CLANG_ENABLE_MODULES=YES",
+        "SWIFT_OPTIMIZATION_LEVEL=-O",
+        "EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64"
+      ].join(" "),
+      export_options: {
+        compileBitcode: false,
+        uploadBitcode: false
+      },
       verbose: true
     )
 
-    puts "Contents of derived data directory:"
-    puts `find #{derived_data_path} -name "*.app"`
+    # List all .app files to help with debugging
+    puts "\nSearching for .app files in output directory:"
+    sh("find #{output_directory} -name '*.app' -type d")
 
-    app_path = Dir.glob("#{output_directory}/Debug-iphonesimulator/*.app").first
+    # Ensure the bundle is copied to the app
+    app_path = Dir.glob("#{output_directory}/Release-iphonesimulator/*.app").first
     if app_path
-      puts "App built successfully at: #{app_path}"
+      puts "\nApp built successfully at: #{app_path}"
+      puts "Copying bundle and assets..."
+      
+      # Copy the bundle and assets to the app
+      sh("cp ../main.jsbundle '#{app_path}/'")
+      sh("cp -R ../assets '#{app_path}/'")
+      
+      # Verify the copied files
+      puts "\nVerifying bundle and assets:"
+      sh("ls -laR '#{app_path}' || echo 'Files not found!'")
+      
+      # Create a symlink for easier access
+      symlink_path = "build/Release-iphonesimulator"
+      sh("mkdir -p build")
+      sh("ln -sf '#{app_path}' '#{symlink_path}'")
+      puts "\nCreated symlink at: #{symlink_path}"
     else
-      UI.user_error!("No .app file found in output directory")
+      UI.user_error!("No .app file found in Release-iphonesimulator directory. Available files:\n#{sh("find #{output_directory} -type f")}")
     end
   end
 end
