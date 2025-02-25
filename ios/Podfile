@@ -45,5 +45,15 @@ target 'weatherApp' do
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+    
+    # Ensure proper module map generation
+    installer.pods_project.targets.each do |target|
+      if target.name == 'RCTDeprecation'
+        target.build_configurations.each do |config|
+          config.build_settings['DEFINES_MODULE'] = 'YES'
+          config.build_settings['SWIFT_VERSION'] = '5.0'
+        end
+      end
+    end
   end
 end

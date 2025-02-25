@@ -1,0 +1,128 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Validate and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: TypeScript Check
+        run: yarn tsc --noEmit
+      
+      - name: Lint
+        run: yarn lint
+      
+      - name: Run Tests
+        run: yarn test
+
+  build-android:
+    name: Build Android
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      NODE_ENV: production
+      WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: android
+      
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+          yarn cache clean
+          rm -rf node_modules/.cache/metro
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      
+      - name: Install Fastlane
+        working-directory: android
+        run: bundle install
+      
+      - name: Build Android with Fastlane
+        working-directory: android
+        run: |
+          echo "WEATHER_API_KEY=${{ secrets.WEATHER_API_KEY }}" > ../.env
+          bundle exec fastlane build_android
+
+  build-ios:
+    name: Build iOS
+    runs-on: macos-13
+    environment: production
+    env:
+      NODE_ENV: production
+      WEATHER_API_KEY: ${{ secrets.WEATHER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+          yarn cache clean
+          rm -rf node_modules/.cache/metro
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: ios
+      
+      - name: Select Xcode Version
+        run: |
+          sudo xcode-select -p
+          sudo xcode-select -s /Applications/Xcode_15.2.app
+          xcodebuild -version
+      
+      - name: Update Fastlane
+        working-directory: ios
+        run: |
+          bundle update fastlane
+          bundle install
+      
+      - name: Install CocoaPods
+        run: |
+          cd ios
+          pod deintegrate
+          pod install
+      
+      - name: Build iOS with Fastlane
+        working-directory: ios
+        run: |
+          echo "WEATHER_API_KEY=${{ secrets.WEATHER_API_KEY }}" > ../.env
+          bundle exec fastlane build_ios 

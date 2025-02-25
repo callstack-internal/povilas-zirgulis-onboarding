@@ -1,4 +1,3 @@
-
 default_platform(:android)
 
 # platform :android do
@@ -13,9 +12,12 @@ default_platform(:android)
 
 
 platform :android do
-  desc "Build and install the app"
-  lane :build_and_install do
-    gradle(task: "assembleDebug")
-    gradle(task: "installDebug")
+  desc "Build release APK"
+  lane :build_android do
+    gradle(
+      task: "clean assembleDebug",
+      project_dir: "./",
+      print_command: true
+    )
   end
 end

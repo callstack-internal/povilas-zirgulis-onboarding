@@ -7,6 +7,6 @@ module.exports = {
     '\\.svg': '<rootDir>/__mocks__/svgMock.js',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|react-native-permissions)/)',
+    'node_modules/(?!(react-native|@react-native|react-native-permissions|react-native-config)/)',
   ],
 };
