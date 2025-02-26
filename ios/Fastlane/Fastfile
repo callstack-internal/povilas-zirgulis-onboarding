@@ -1,0 +1,32 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build the iOS app for simulator"
+  lane :build_ios do |options|
+    scheme = options[:scheme] || ENV['APP_SCHEME'] || "weatherApp"
+
+    # Pre-build checks
+    UI.user_error!("Scheme is not specified") unless scheme
+
+    # Setup Node environment
+    ENV["NODE_BINARY"] = `which node`.strip
+
+    gym(
+      scheme: scheme,
+      export_method: "development",
+      skip_package_ipa: true,
+      destination: "generic/platform=iOS Simulator",
+      skip_codesigning: true,
+      skip_archive: true,
+      clean: true,
+      xcargs: "MODULEMAP_FILE=$(pwd)/Pods/Headers/Public/RCTDeprecation/RCTDeprecation.modulemap",
+
+      verbose: true
+    )
+
+    UI.success("Build completed successfully 🚀")
+  rescue => e
+    UI.error("Failed to build the app: #{e}")
+    raise e
+  end
+end

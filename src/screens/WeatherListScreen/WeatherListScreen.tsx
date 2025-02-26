@@ -29,7 +29,7 @@ const WeatherListScreen = () => {
 
   const renderItem = useCallback(
     ({item, index}: {item: Weather; index: number}) => (
-      <WeatherListItem item={item} testID={`city_name_${index}`} />
+      <WeatherListItem item={item} index={index} />
     ),
     [],
   );
